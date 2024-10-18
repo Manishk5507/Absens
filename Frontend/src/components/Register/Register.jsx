@@ -1,6 +1,11 @@
+import Signup from "./Signup"
+
+
 function Register() {
   return (
-    <div className="min-h-screen">Register</div>
+    <div>
+      <Signup/>
+    </div>
   )
 }
 

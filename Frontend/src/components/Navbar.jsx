@@ -5,12 +5,18 @@ import { NavLink } from "react-router-dom";
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+  const handleLogout = () => {
+    setDropdownOpen(!dropdownOpen);
+    setIsLoggedIn(false);
+    console.log("clicked logout");
   };
 
   return (
@@ -137,7 +143,38 @@ const Navbar = () => {
               {/* Dropdown Menu */}
               {dropdownOpen && (
                 <div className="absolute right-0 mt-40 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                  <div className="py-2"></div>
+                  <div className="py-2">
+                    {isLoggedIn ? (
+                      <>
+                        <NavLink
+                          to="/profile"
+                          className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                          onClick={() => setDropdownOpen(false)} // Close dropdown on click
+                        >
+                          My Profile
+                        </NavLink>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                        >
+                          Log Out
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <NavLink
+                          to="/register"
+                          className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            setIsLoggedIn(true);
+                          }} // Close dropdown on click
+                        >
+                          Register
+                        </NavLink>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

@@ -11,7 +11,9 @@ import Navbar from "./components/Navbar.jsx";
 import Footer from "./Components/Footer.jsx";
 import FindMissing from "./Components/Find/FindMissing.jsx";
 import Error404 from "./components/Error404.jsx";
-import About from "./components/LandingPage/About.jsx";
+import About from "./Components/LandingPage/About.jsx";
+import Profile from "./Components/Register/Profile.jsx";
+import Login from "./Components/Register/Login.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -24,7 +26,9 @@ createRoot(document.getElementById("root")).render(
         <Route path="/guidelines" element={<Guidelines />} />
         <Route path="/about" element={<About />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/guidelines" element={<Cases />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/cases" element={<Cases />} />
         <Route path="/*" element={<Error404 />} />
       </Routes>
       <Footer />
