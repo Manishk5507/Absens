@@ -4,7 +4,7 @@ const FindMissingSchema = new Schema(
   {
     name: { type: String, required: true },
     age: { type: Number, min: 0, required: true },
-    gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
+    gender: { type: String, enum: ["male", "female", "other","Male","Female","Other","MALE","FEMALE","OTHER"], required: true },
     height: { type: Number, min: 0, default: 0 },
     weight: { type: Number, min: 0, default: 0 },
     hairColor: { type: String, default: "" },
@@ -13,7 +13,7 @@ const FindMissingSchema = new Schema(
     lastSeenDate: { type: Date, required: true },
     lastSeenLocation: { type: String, required: true },
     additionalInfo: { type: String, default: "" },
-    image: { type: String },
+    image: { type: String,default:"" },
     // images:{
     //   urls:{type:Array,default:[{
     //     type:String,

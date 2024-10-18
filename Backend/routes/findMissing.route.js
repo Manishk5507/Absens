@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-
+const User = require("../models/user.model");
 const FindMissing = require("../models/findMissing.model");
 const wrapAsync = require("../utils/wrapAsync");
 
 // Add a new report
-router.post("/add", async (req, res) => {
+router.post("/add/:userId", async (req, res) => {
   // console.log(req.body);
   try {
     const {
@@ -23,6 +23,11 @@ router.post("/add", async (req, res) => {
       image,
     } = req.body;
 
+    const userId = req.params.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
     const newFindMissing = new FindMissing({
       name,
       age,
@@ -36,11 +41,16 @@ router.post("/add", async (req, res) => {
       additionalInfo,
       relationshipWithMissing,
       image,
+      user: userId,
     });
 
     const report = await newFindMissing.save();
-    res.json(report);
+    const user= await User.findById(userId);
+    user.findingCases.push(report._id);
+    await user.save();
+    res.status(200).json(report);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Failed to add report" });
   }
 });

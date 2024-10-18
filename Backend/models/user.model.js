@@ -3,8 +3,8 @@ const passportLocalMongoose = require("passport-local-mongoose");
 
 const UserSchema = new Schema(
   {
-    username: { type: String, required: true, unique: true }, 
-    email: { type: String, required: true, unique: true },  
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
     address: { type: String, default: "" },
     firstName: { type: String, default: "" },
     lastName: { type: String, default: "" },
@@ -14,6 +14,8 @@ const UserSchema = new Schema(
     state: { type: String, default: "" },
     postalCode: { type: String, default: "" },
     notification: { type: Boolean, default: false },
+    reportedCases: [{ type: Schema.Types.ObjectId, ref: "ReportMissing" }],
+    findingCases: [{ type: Schema.Types.ObjectId, ref: "FindMissing" }],
   },
   { timestamps: true }
 );

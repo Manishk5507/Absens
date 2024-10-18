@@ -111,7 +111,7 @@ const Navbar = () => {
             {/* Full Menu for Larger Screens */}
             <div className="hidden md:flex space-x-8 transition-all duration-300 ease-in-out">
               <NavLink
-                to="/aboutUs"
+                to="/about"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
@@ -151,14 +151,14 @@ const Navbar = () => {
                 FIND THE MISSING
               </NavLink>
               <NavLink
-                to="/rules"
+                to="/guidelines"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                RULES & REGULATIONS
+                GUIDELINES
               </NavLink>
             </div>
 
@@ -255,7 +255,7 @@ const Navbar = () => {
             </div>
             <nav className="flex flex-col p-4 space-y-4">
               <NavLink
-                to="/aboutUs"
+                to="/about"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
@@ -285,14 +285,14 @@ const Navbar = () => {
                 FIND THE MISSING
               </NavLink>
               <NavLink
-                to="/rules"
+                to="/guidelines"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                RULES & REGULATIONS
+               GUIDELINES
               </NavLink>
               {user !== null ? (
                 <NavLink

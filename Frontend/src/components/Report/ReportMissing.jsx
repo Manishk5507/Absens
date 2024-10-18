@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const ReportMissing = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +19,9 @@ const ReportMissing = () => {
     image: null,
   });
 
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData((prevData) => ({
@@ -23,12 +30,56 @@ const ReportMissing = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = new FormData();
-    Object.keys(formData).forEach((key) => {
-      data.append(key, formData[key]);
-    });
+    if (!user) {
+      toast.error("You need to login first", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      navigate(`/login`);
+      return;
+    }
+    const confirm = window.confirm("Do you accept the terms and conditions?");
+    if (!confirm) {
+      return;
+    }
+    const data = {
+      ...formData,
+      user: user._id,
+      image: formData.image ? formData.image.name : "",
+    };
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/add/${user._id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        // Check for a successful response
+        toast.success(
+          "Your reportedCase has been listed successfully! Now, you can search in our database for matches.",
+          {
+            position: "bottom-right",
+            autoClose: 3000,
+          }
+        );
+
+        setTimeout(() => {
+          navigate(`/`);
+        }, 3000);
+      } else {
+        // Handle unexpected response status
+        toast.error("Failed to submit your search. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting the form:", error);
+      toast.error(
+        "An error occurred while submitting your search. Please try again."
+      );
+    }
   };
 
   return (

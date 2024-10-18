@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const ReportMissing = require("../models/reportMissing.model");
+const User = require("../models/user.model");
 
 // Route to add a new missing report
 router.post("/add/:userId", async (req, res) => {
-  console.log(req.body);
-  console.log(req.params.userId);
+  // console.log(req.body);
+  // console.log(req.params.userId);
   try {
     const {
       name,
@@ -41,13 +42,19 @@ router.post("/add/:userId", async (req, res) => {
       whereFound,
       additionalInfo,
       image,
-      user: userId, // Link the report to the user
+      user: userId,
     });
+
+    const user = await User.findById(userId);
+    
 
     // Save the report to the database
     const report = await newReportMissing.save();
+    user.reportedCases.push(report._id);
+    await user.save();
     res.status(201).json({ message: "Report added successfully", report });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ message: "Error adding report", error: error.message });

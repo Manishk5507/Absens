@@ -1,4 +1,8 @@
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const FindMissing = () => {
   const [formData, setFormData] = useState({
@@ -13,8 +17,11 @@ const FindMissing = () => {
     lastSeenDate: "",
     lastSeenLocation: "",
     additionalInfo: "",
-    image:null,
+    image: null,
   });
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -24,10 +31,58 @@ const FindMissing = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission (e.g., send data to server)
-    console.log(formData);
+    
+    if (!user) {
+      toast.error("You need to login first", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      navigate(`/login`);
+      return;
+    }
+
+    const confirm = window.confirm("Do you accept the terms and conditions?");
+    if (!confirm) {
+      return;
+    }
+
+    const data = {
+      ...formData,
+      image: formData.image ? formData.image.name : "", // send only the image name or an empty string
+    };
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/findMissing/add/${user._id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        // Check for a successful response
+        toast.success(
+          "Your searching has been listed successfully! Now, you can search in our database for matches.",
+          {
+            position: "bottom-right",
+            autoClose: 3000,
+          }
+        );
+
+        setTimeout(() => {
+          navigate(`/`);
+        }, 3000);
+      } else {
+        // Handle unexpected response status
+        toast.error("Failed to submit your search. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting the form:", error);
+      toast.error(
+        "An error occurred while submitting your search. Please try again."
+      );
+    }
   };
 
   return (
@@ -204,14 +259,14 @@ const FindMissing = () => {
           </div>
           <div className="form-group sm:col-span-2">
             <label
-              htmlFor="additionalDetails"
+              htmlFor="additionalInfo"
               className="block mb-2 text-xl font-medium text-gray-900 dark:text-black"
             >
               Additional Details
             </label>
             <textarea
-              name="additionalDetails"
-              id="additionalDetails"
+              name="additionalInfo"
+              id="additionalInfo"
               placeholder="Additional Details"
               onChange={handleChange}
               className="input h-8 w-full px-2 py-1 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none"
