@@ -131,5 +131,9 @@ bower_components
 psd
 thumb
 sketch
+.venv
+.env
+
+__pycache__/
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node,react
