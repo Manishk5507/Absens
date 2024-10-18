@@ -1,6 +1,22 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
+  /* padding: 2rem; */
+  /* background-color: black; */
   color: black;
+  /* min-height: 100vh; */
+  
 }
+
+.underline-text::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px; /* Adjust this to position the underline slightly */
+  width: 100%;
+  height: 2px;
+  background-color: red;
+  transform: rotate(-0.5deg); /* Slight rotation for curve effect */
+}
+
 

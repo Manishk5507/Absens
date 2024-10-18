@@ -100,14 +100,14 @@ const Navbar = () => {
                 FIND THE MISSING
               </NavLink>
               <NavLink
-                to="/rules"
+                to="/guidelines"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                RULES & REGULATIONS
+                GUIDELINES
               </NavLink>
             </div>
 
@@ -208,14 +208,14 @@ const Navbar = () => {
                 FIND THE MISSING
               </NavLink>
               <NavLink
-                to="/rules"
+                to="/guidelines"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                Guidelines
+                GUIDELINES
               </NavLink>
               (
               <NavLink
