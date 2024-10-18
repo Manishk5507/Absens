@@ -43,3 +43,10 @@ def save_embedding_to_db(embedding, p_id=1):
     else:
         return 1
     
+    
+def delete_person_from_db(id):
+    try:
+        collection.delete_one({'id': id})
+        return 1
+    except Exception as e:
+        return 0

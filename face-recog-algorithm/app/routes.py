@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from app.utils import get_all_embeddings_from_db, get_person, save_embedding_to_db
+from app.utils import delete_person_from_db, get_all_embeddings_from_db, get_person, save_embedding_to_db
 import requests
 import cv2
 import numpy as np
@@ -100,3 +100,12 @@ def search():
                         "score": score}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/delete/<int:id>', methods=['DELETE'])
+def delete(id):
+    response = delete_person_from_db(id)
+    if response == 0:
+        return jsonify({"message": 'Person not found'}), 404
+    
+    return jsonify({"Person deleted succesfully"}), 200
