@@ -1,9 +1,17 @@
 // import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 
 export default function Profile() {
   const [photo, setPhoto] = useState("https://via.placeholder.com/150"); // Replace with the initial image URL
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
+  const { user, setUser } = useAuth();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -15,6 +23,20 @@ export default function Profile() {
     postalCode: "",
   });
 
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        country: user.country || "",
+        address: user.address || "",
+        streetAddress: user.streetAddress || "",
+        city: user.city || "",
+        state: user.state || "",
+        postalCode: user.postalCode || "",
+      });
+    }
+  }, [user]);
 
   // Function to handle input change
   const handleChange = (e) => {
@@ -43,14 +65,48 @@ export default function Profile() {
   };
 
   const handleCancelClick = () => {
-    console.log("cancel clicked");
+    navigate("/");
   };
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/update-profile/${
+          user._id
+        }`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser((prevUser) => ({ ...prevUser, ...data.user })); // Update user context
+        toast.success("User Profile Updated successfully!", {
+          position: "bottom-right",
+          autoClose: 5000,
+        }); // Display success message
+        setTimeout(() => navigate("/"), 1300);
+      } else {
+        toast.error("Failed to update profile", {
+          position: "bottom-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      toast.error(error.message || "Internal error occured", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   return (
@@ -79,7 +135,7 @@ export default function Profile() {
                       name="username"
                       type="text"
                       placeholder="Your Username"
-                      value="username"
+                      value={user === null ? "NA" : user.username}
                       readOnly
                       className="block flex-1 border-0 bg-transparent py-1.5 px-2 text-gray-900 focus:ring-0 sm:text-sm sm:leading-6 "
                     />
@@ -100,7 +156,7 @@ export default function Profile() {
                       name="email"
                       type="text"
                       placeholder="Your Email"
-                      value="email"
+                      value={user === null ? "NA" : user.email}
                       readOnly
                       className="block border-none flex-1 border-0 bg-transparent py-1.5 px-2 sm:text-sm sm:leading-6"
                     />

@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate,useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     username: "", // Change to username
     password: "",
-    rememberMe: false,
   });
 
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -27,10 +31,49 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) return;
+  
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
+      });
+  
+      const data = await response.json();
+      // console.log(data);
+  
+      if (response.ok) {
+        toast.success(data.message || "Login successful!", {
+          position: "bottom-right",
+          autoClose: 1000,
+        });
+        setUser(data.user); // Update to use username, email, and _id
+        const redirectTo = location.state?.from?.pathname || '/';
+        console.log(redirectTo);
+        setTimeout(() => navigate(redirectTo, { replace: true }), 1300); // Redirect after 3 seconds
+      } else {
+        // This will handle errors such as wrong username/password
+        toast.error(data.error || "Wrong username or password", {
+          position: "bottom-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      toast.error(error.message || "An error occurred during login.", {
+        position: "bottom-right",
+        autoClose: 5000,
+      });
+    }
   };
 
   return (

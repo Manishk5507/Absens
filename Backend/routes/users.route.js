@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
-// register path using passport js
-
 const passport = require("passport");
-
 const User = require("../models/user.model");
 
 router.post("/register", (req, res) => {

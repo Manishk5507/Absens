@@ -1,22 +1,67 @@
 import { useState } from "react";
+import axios from "axios";
+import { NavLink, useNavigate } from "react-router-dom";
 import ABSENSLOGO from "../assets/absens.png";
-import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
+
+import { useAuth } from "../context/AuthContext.jsx";
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const { user,setUser } = useAuth();
+
+  const navigate = useNavigate();
+
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
+  const handleLogout = async () => {
+    try {
+      // Send a request to the logout endpoint
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/logout`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      // Check if logout was successful
+      if (response.status === 200) {
+        localStorage.removeItem("token");
+        // console.log("Logout successful");
+        setDropdownOpen(false);
+        setSidebarOpen(false);
+        setUser(null);
+
+        toast.success("User logged out successfully!", {
+          position: "bottom-right",
+          autoClose: 2000,
+        });
+
+        navigate("/");
+      } else {
+        console.log("Some error occured during logout");
+        toast.error("An error occurred while logging out.", {
+          position: "bottom-right",
+          autoClose: 2000,
+        });
+      }
+    } catch (error) {
+      // Handle error during logout
+      console.error("Logout error:", error);
+      toast.error(error.message || "An error occurred while logging out.", {
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+    }
+  };
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-  };
-  const handleLogout = () => {
-    setDropdownOpen(!dropdownOpen);
-    setIsLoggedIn(false);
-    console.log("clicked logout");
   };
 
   return (
@@ -66,14 +111,14 @@ const Navbar = () => {
             {/* Full Menu for Larger Screens */}
             <div className="hidden md:flex space-x-8 transition-all duration-300 ease-in-out">
               <NavLink
-                to="/about"
+                to="/aboutUs"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                ABOUT
+                ABOUT US
               </NavLink>
               <NavLink
                 to="/cases"
@@ -106,14 +151,14 @@ const Navbar = () => {
                 FIND THE MISSING
               </NavLink>
               <NavLink
-                to="/guidelines"
+                to="/rules"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                GUIDELINES
+                RULES & REGULATIONS
               </NavLink>
             </div>
 
@@ -144,7 +189,7 @@ const Navbar = () => {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-40 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                   <div className="py-2">
-                    {isLoggedIn ? (
+                    {user !== null ? (
                       <>
                         <NavLink
                           to="/profile"
@@ -161,18 +206,13 @@ const Navbar = () => {
                         </button>
                       </>
                     ) : (
-                      <>
-                        <NavLink
-                          to="/register"
-                          className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            setIsLoggedIn(true);
-                          }} // Close dropdown on click
-                        >
-                          Register
-                        </NavLink>
-                      </>
+                      <NavLink
+                        to="/register"
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                        onClick={() => setDropdownOpen(false)} // Close dropdown on click
+                      >
+                        LOGIN/SIGNUP
+                      </NavLink>
                     )}
                   </div>
                 </div>
@@ -215,14 +255,14 @@ const Navbar = () => {
             </div>
             <nav className="flex flex-col p-4 space-y-4">
               <NavLink
-                to="/about"
+                to="/aboutUs"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                ABOUT
+                ABOUT US
               </NavLink>
               <NavLink
                 to="/report-the-missing"
@@ -245,27 +285,53 @@ const Navbar = () => {
                 FIND THE MISSING
               </NavLink>
               <NavLink
-                to="/guidelines"
+                to="/rules"
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-bold transition-transform transform scale-105"
                     : "text-gray-800"
                 }
               >
-                GUIDELINES
+                RULES & REGULATIONS
               </NavLink>
-              (
-              <NavLink
-                to="/register"
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-blue-600 font-bold transition-transform transform scale-105"
-                    : "text-gray-800"
-                }
-              >
-                REGISTER
-              </NavLink>
-              )
+              {user !== null ? (
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-600 font-bold transition-transform transform scale-105"
+                      : "text-gray-800"
+                  }
+                >
+                  PROFILE
+                </NavLink>
+              ) : (
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-600 font-bold transition-transform transform scale-105"
+                      : "text-gray-800"
+                  }
+                >
+                  REGISTER
+                </NavLink>
+              )}
+              {user !== null ? (
+                <NavLink
+                  to="/"
+                  onClick={handleLogout}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-600 font-bold transition-transform transform scale-105"
+                      : "text-gray-800"
+                  }
+                >
+                  LOGOUT
+                </NavLink>
+              ) : (
+                ""
+              )}
             </nav>
           </div>
         </div>

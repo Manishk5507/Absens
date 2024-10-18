@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-
-
-
-
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -12,8 +11,11 @@ const Signup = () => {
     password: "",
   });
 
+  const { setUser } = useAuth();
 
   const [errors, setErrors] = useState({});
+  const URL = import.meta.env.VITE_BACKEND_URL;
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -38,8 +40,29 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
-   e.preventDefault();
-   console.log(formData);
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    try {
+      const response = await axios.post(`${URL}/api/users/register`, formData, {
+        withCredentials: true,
+      });
+      const data = await response.data;
+      // console.log(response.data);
+      toast.success("Signup successful! Redirecting to the home page...", {
+        position: "bottom-right", // Direct string instead of toast.POSITION
+        autoClose: 3000,
+      });
+      setUser(data.user); // Call signup function from AuthContext
+      setTimeout(() => navigate("/"), 2000); // Redirect after 3 seconds
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "An error occurred during signup.";
+      toast.error(message, {
+        position: "bottom-right", // Direct string instead of toast.POSITION
+        autoClose: 5000,
+      });
+    }
   };
 
   return (
