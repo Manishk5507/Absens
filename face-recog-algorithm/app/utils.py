@@ -22,3 +22,21 @@ except Exception as e:
 
 def get_all_embeddings_from_db():
     return list(collection.find({}, {'_id': 0}))  # Exclude MongoDB's default ID
+
+def get_person(id):
+    return list(collection.find({'id': id}, {'_id': 0})) 
+
+# Function to save embeddings
+def save_embedding_to_db(embedding, data):
+    avg_embedding = np.mean(embedding, axis=0)
+    embedding = avg_embedding.tolist()
+  
+
+    # Prepare the document to be inserted into the database
+    document = {
+        'id': data['id'],
+        'embedding': embedding, # Save the embedding (list or array)
+    }
+
+    # Insert the document into the MongoDB collection
+    collection.insert_one(document)
