@@ -1,5 +1,5 @@
 import MissingTextPortion from "./MissingTextPortion";
-import MissingPersonCard from "./MissingPersonCard";
+import MissingPersonCard from "./MissingPersonCard.jsx";
 import CallToAction from "./CallToAction.jsx";
 
 const people = [

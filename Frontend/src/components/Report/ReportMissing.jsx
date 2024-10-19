@@ -51,29 +51,33 @@ const ReportMissing = () => {
     };
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/add/${user._id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/add/${user._id}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if (response.status === 200) {
-        // Check for a successful response
-        toast.success(
-          "Your reportedCase has been listed successfully! Now, you can search in our database for matches.",
-          {
-            position: "bottom-right",
-            autoClose: 3000,
-          }
-        );
+      console.log(response);
 
-        setTimeout(() => {
-          navigate(`/`);
-        }, 3000);
-      } else {
-        // Handle unexpected response status
-        toast.error("Failed to submit your search. Please try again.");
-      }
+      // Check for a successful response
+      toast.success(
+        "Your reportedCase has been listed successfully! Now, you can search in our database for matches.",
+        {
+          position: "bottom-right",
+          autoClose: 3000,
+        }
+      );
+
+  
+      // response.data.comingFrom = "ReportMissing";
+
+      setTimeout(() => {
+        navigate("/cases/showDetails", { state: { data: response.data } });
+      }, 3000);
     } catch (error) {
       console.error("Error submitting the form:", error);
       toast.error(

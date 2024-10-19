@@ -60,8 +60,7 @@ const FindMissing = () => {
         },
       });
 
-      if (response.status === 200) {
-        // Check for a successful response
+      
         toast.success(
           "Your searching has been listed successfully! Now, you can search in our database for matches.",
           {
@@ -70,13 +69,12 @@ const FindMissing = () => {
           }
         );
 
+        // response.data.comingFrom = "FindMissing";
+
         setTimeout(() => {
-          navigate(`/`);
+          navigate(`/cases/showDetails`,{ state: { data: response.data } });
         }, 3000);
-      } else {
-        // Handle unexpected response status
-        toast.error("Failed to submit your search. Please try again.");
-      }
+      
     } catch (error) {
       console.error("Error submitting the form:", error);
       toast.error(
