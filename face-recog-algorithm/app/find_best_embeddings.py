@@ -6,20 +6,29 @@ from app.utils import get_all_embeddings_from_db
 def average_embedding(embeddings):
     return np.mean(embeddings, axis=0)
 
-def find_best_embedding(query_embedding, c_id=1,  threshold=0.5):
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+def find_best_embedding(query_embedding, c_id=1, threshold=0.5):
     best_match = None
     min_distance = float('inf')
     score = 0
     persons = get_all_embeddings_from_db(c_id)
 
+    # Ensure query_embedding is a NumPy array
+    if isinstance(query_embedding, list):
+        query_embedding = np.array(query_embedding)
+    
     for item in persons:
-        embedding = item['embedding']
+        embedding = item['images']['embeddings']
         if embedding is None:
             continue
         
-        # Calculate cosine similarity
+        # Ensure embedding is a NumPy array
         if isinstance(embedding, list):
             embedding = np.array(embedding)
+        
+        # Calculate cosine similarity
         similarity = cosine_similarity(query_embedding.reshape(1, -1), embedding.reshape(1, -1))
         distance = 1 - similarity[0, 0]  # Convert similarity to distance
         
@@ -29,5 +38,5 @@ def find_best_embedding(query_embedding, c_id=1,  threshold=0.5):
             best_match = item
             score = 1 - distance  # Similarity score between 0 and 1
 
-    return best_match, score 
- # Return the best match or None if no match found
+    return best_match, score
+

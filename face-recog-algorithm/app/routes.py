@@ -151,9 +151,14 @@ def delete(id):
     return jsonify({"Person deleted succesfully"}), 200
 
 
-def find_best(search_type=1):
-    p_id = request.get_json().get('unique_id')
-    person = get_person(p_id, search_type)
+def find_best(p_id, search_type=1):
+    print("=================",p_id)
+    if search_type == 1:
+        person = get_person(p_id, 2)
+    else:
+        person = get_person(p_id, 1)
+    print("=========================================================================")
+    print(person)
     if not person:
         return jsonify({"message": 'Person not found'}), 404
     embedding = person['images']['embeddings']
@@ -164,8 +169,10 @@ def find_best(search_type=1):
 
 @app.route('/find/search', methods=['POST'])
 def find_search():
-    return find_best()
+    p_id = request.get_json().get('unique_id')
+    return find_best(p_id, 1)
 
 @app.route('/report/search', methods=['POST'])
 def report_search():
-    return find_best(2)
+    p_id = request.get_json().get('unique_id')
+    return find_best(p_id ,2)

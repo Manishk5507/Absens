@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 function Showdetails() {
   const [report, setReport] = useState({});
@@ -10,10 +11,39 @@ function Showdetails() {
     if (data && Object.keys(data).length > 0) {
       console.log("data", data);
       const info = data.report || data;
-      console.log("info: ",info.images.urls[0]);
+      console.log("info: ", info.images.urls[0]);
       setReport(info);
     }
   }, [data]);
+
+  const handleSearch = async (id,lastSeenDate) => {
+    console.log("idddddd===", id);
+    console.log("lastSeenDate===", lastSeenDate);
+    let searchopt=""
+    if(lastSeenDate===undefined){
+      searchopt="report"
+    }else{
+      searchopt="find"
+    }
+    console.log(searchopt)
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_FACE_RECOGNITION}/${searchopt}/search`,
+        {
+          unique_id: id,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("respsssss===", response);
+      console.log("resssdataa", response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-6 bg-gray-100 text-black">
@@ -104,14 +134,14 @@ function Showdetails() {
         </div>
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button
-            type="submit"
-            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Search Person
-          </button>
-        </div>
-
+        <button
+          type="submit"
+          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          onClick={() => handleSearch(report.unique_id,report?.lastSeenDate)}
+        >
+          Search Person
+        </button>
+      </div>
     </div>
   );
 }
