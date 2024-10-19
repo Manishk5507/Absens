@@ -14,6 +14,7 @@ const ReportMissingSchema = new Schema(
     whenFound: { type: Date, required: true },
     whereFound: { type: String, required: true },
     additionalInfo: { type: String, default: "" },
+    identity:{type:String, default: "Report"},
     images: {
       urls: [
         {

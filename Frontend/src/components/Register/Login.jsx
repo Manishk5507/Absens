@@ -59,7 +59,7 @@ const Login = () => {
         });
         setUser(data.user); // Update to use username, email, and _id
         const redirectTo = location.state?.from || '/';
-        console.log(redirectTo);
+        // console.log(redirectTo);
         setTimeout(() => navigate(redirectTo, { replace: true }), 1300); // Redirect after 3 seconds
       } else {
         // This will handle errors such as wrong username/password

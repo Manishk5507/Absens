@@ -49,6 +49,8 @@ function FindingCases() {
           {people.map((person, index) => (
             <MissingPersonCard
               key={index}
+              id={person._id}
+              identity={person.identity}
               name={person.name}
               missingSince={person.missingSince}
               image={person.images.urls[0]}

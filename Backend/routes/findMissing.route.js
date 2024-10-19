@@ -94,7 +94,7 @@ router.get("/getAll", async (req, res) => {
 });
 
 // Get a single report by ID
-router.get("/single/:id", async (req, res) => {
+router.get("/get/:id", async (req, res) => {
   try {
     const report = await FindMissing.findById(req.params.id);
     if (!report) {

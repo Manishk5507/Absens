@@ -21,15 +21,15 @@ export const AuthProvider = ({ children }) => {
         setUser(null); // Clear the user data if not authenticated
       }
 
-      try {
-          const response = await axios.get(
-            `${import.meta.env.VITE_FACE_RECOGNITION}`
-          );
-          console.log(response);
-          console.log(response.data);
-        } catch (error) {
-          console.log(error);
-        }
+      // try {
+      //     const response = await axios.get(
+      //       `${import.meta.env.VITE_FACE_RECOGNITION}`
+      //     );
+      //     console.log(response);
+      //     console.log(response.data);
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
 
 
     } catch (error) {
