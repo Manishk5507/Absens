@@ -17,6 +17,7 @@ import Login from "./components/Register/Login.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import Showdetails from "./components/Cases/Showdetails.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -34,6 +35,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cases" element={<Cases />} />
+          <Route path="/cases/showDetails" element={<Showdetails />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
         <Footer />
