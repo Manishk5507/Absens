@@ -151,6 +151,7 @@ const FindMissing = () => {
             <select
               name="gender"
               id="gender"
+              required
               onChange={handleChange}
               className="input block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none"
             >

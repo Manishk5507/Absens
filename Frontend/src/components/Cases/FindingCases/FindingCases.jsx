@@ -1,13 +1,46 @@
 import MissingPersonCard from "../MissingPersonCard.jsx";
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+// import { useAuth } from "../../../context/AuthContext.jsx";
+// import { useNavigate } from "react-router-dom";
 
 function FindingCases() {
   const [people, setPeople] = useState([]);
+  // const { user } = useAuth();
+  // const navigate = useNavigate();
 
-  const location = useLocation();
-  const { data } = location.state || {};
-  setPeople(data);
+  useEffect(() => {
+    const fetchPeopleData = async () => {
+      // if (!user) {
+      //   toast.error("You need to login first", {
+      //     position: "bottom-right",
+      //     autoClose: 3000,
+      //   });
+      //   navigate(`/login`);
+
+      //   return;
+      // }
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/findMissing/getAll`
+        );
+        if (!response.ok) {
+          toast.error("Error fetching data", {
+            position: "bottom-right",
+            autoClose: 3000,
+          });
+          return;
+        }
+        const result = await response.json();
+        setPeople(result); // Assuming your API returns an array of people
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // Fetch data from API when the component mounts
+    fetchPeopleData();
+  }, []);
 
   return (
     <div>

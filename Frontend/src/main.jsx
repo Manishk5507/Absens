@@ -20,6 +20,8 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import Showdetails from "./components/Cases/Showdetails.jsx";
 import FindingCases from "./components/Cases/FindingCases/FindingCases.jsx";
 import ReportedCases from "./components/Cases/ReportedCases/ReportedCases.jsx";
+import UserReportedCases from "./components/Cases/ReportedCases/UserReportedCases.jsx";
+import UserFindingCases from "./components/Cases/FindingCases/UserFindingCases.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -39,7 +41,9 @@ createRoot(document.getElementById("root")).render(
           <Route path="/cases" element={<Cases />} />
           <Route path="/cases/showDetails" element={<Showdetails />} />
           <Route path="/cases/reportedCases" element={<ReportedCases />} />
-          <Route path="/cases/finingCases" element={<FindingCases />} />
+          <Route path="/cases/findingCases" element={<FindingCases />} />
+          <Route path="/cases/userReportedCases" element={<UserReportedCases />} />
+          <Route path="/cases/userFindingCases" element={<UserFindingCases />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
         <Footer />

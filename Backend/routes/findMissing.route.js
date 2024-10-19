@@ -56,10 +56,10 @@ router.post("/add/:userId", async (req, res) => {
 });
 
 // Get all reports
-router.get("/all", async (req, res) => {
+router.get("/getAll", async (req, res) => {
   try {
     const reports = await FindMissing.find();
-    res.json(reports);
+    res.status(200).json(reports);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch reports" });
   }
@@ -75,6 +75,19 @@ router.get("/single/:id", async (req, res) => {
     res.json(report);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch report" });
+  }
+});
+
+router.get("/user-finding-cases/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate("findingCases");
+    const reports = await user.findingCases;
+    res.status(200).json(reports);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error retrieving data", error: error.message });
   }
 });
 

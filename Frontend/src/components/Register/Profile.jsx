@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import axios from "axios";
 
 export default function Profile() {
   const [photo, setPhoto] = useState("https://via.placeholder.com/150"); // Replace with the initial image URL
@@ -66,6 +66,64 @@ export default function Profile() {
 
   const handleCancelClick = () => {
     navigate("/");
+  };
+
+  // Function to get all reported cases of the user
+  const getAllUserReportedCases = async () => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/reportMissing/user-reported-cases/${user._id}`
+      );
+
+      // Check if the response is successful
+      if (response.status === 200) {
+        const data = response.data; // This will contain the reported cases
+        console.log("data send", data);
+        navigate("/cases/userReportedCases", { state: { data: data } });
+      } else {
+        toast.error("Failed to fetch reported cases", {
+          position: "bottom-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Internal error occurred", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  // Function to get all finding cases of the user
+
+  const getAllUserFindingCases = async () => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/findMissing/user-finding-cases/${user._id}`
+      );
+      const data = await response.data;
+      console.log(response);
+      if (response.status === 200) {
+        // This will contain the reported cases
+        console.log("data send", data);
+        navigate("/cases/userFindingCases", { state: { data: data } });
+      } else {
+        toast.error("Failed to fetch reported cases", {
+          position: "bottom-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      toast.error(error.message || "Internal error occured", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   // Function to handle form submission
@@ -414,6 +472,25 @@ export default function Profile() {
               matched someone changes.
             </p>
 
+            <div>
+              <div className="mt-6 flex items-center justify-start gap-x-6">
+                <button
+                  type="button"
+                  onClick={getAllUserReportedCases}
+                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Your Reported Cases
+                </button>
+                <button
+                  type="button"
+                  onClick={getAllUserFindingCases}
+                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Your Finding Cases
+                </button>
+              </div>
+            </div>
+
             {/* <div className="mt-4 space-y-10">
               <fieldset>
                 <div className="mt-6 space-y-6">
@@ -458,7 +535,7 @@ export default function Profile() {
             type="submit"
             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            Save
+            Update Profile
           </button>
         </div>
       </form>

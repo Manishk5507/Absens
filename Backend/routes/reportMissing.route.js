@@ -46,7 +46,6 @@ router.post("/add/:userId", async (req, res) => {
     });
 
     const user = await User.findById(userId);
-    
 
     // Save the report to the database
     const report = await newReportMissing.save();
@@ -91,6 +90,19 @@ router.get("/get/:id", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error retrieving report", error: error.message });
+  }
+});
+
+router.get("/user-reported-cases/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate("reportedCases");
+    const reports = await user.reportedCases;
+    res.status(200).json(reports);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error retrieving reports", error: error.message });
   }
 });
 
