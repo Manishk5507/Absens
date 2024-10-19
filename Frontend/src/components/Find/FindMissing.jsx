@@ -98,7 +98,9 @@ const FindMissing = () => {
       );
 
       setTimeout(async () => {
-        const id = response.data.unique_id;
+        console.log(response.data)
+        console.log(response.data.report);
+        const id = response.data.report.unique_id;
         try {
           const saveEmbeddingsResponse = await axios.post(
             `${import.meta.env.VITE_FACE_RECOGNITION}/find/saveembeddings`,

@@ -106,9 +106,11 @@ const ReportMissing = () => {
         }
       );
 
-      console.log(response);
+      console.log("======Resp======",response.data.report);
       setTimeout(async () => {
-        const id = response.data.unique_id;
+        console.log("unique_id============",response.data.report.unique_id)
+        const id = response.data.report.unique_id;
+        console.log("unique_id=====",id)
         try {
           const saveEmbeddingsResponse = await axios.post(
             `${import.meta.env.VITE_FACE_RECOGNITION}/report/saveembeddings`,
