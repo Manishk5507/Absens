@@ -39,7 +39,7 @@ function ReportedCases() {
                 key={index}
                 name={person.name}
                 missingSince={person.missingSince}
-                image={person.image}
+                image={person.images.urls[0]}
               />
             ))
           ) : (
