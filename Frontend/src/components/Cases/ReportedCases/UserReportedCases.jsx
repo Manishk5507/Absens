@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import MissingPersonCard from "../MissingPersonCard.jsx";
-// import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 
 function UserReportedCases() {
@@ -10,7 +9,7 @@ function UserReportedCases() {
   const { data } = location.state || [];
 
   useEffect(() => {
-    console.log("data", data);
+    // console.log("data", data);
     if (data && Object.keys(data).length > 0) {
       setPeople(data);
     }
@@ -25,6 +24,7 @@ function UserReportedCases() {
               <MissingPersonCard
                 key={index}
                 id={person._id}
+                identity={person.identity}
                 name={person.name}
                 missingSince={person.whenFound}
                 image={person.images.urls[0]}

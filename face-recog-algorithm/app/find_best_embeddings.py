@@ -10,9 +10,9 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 def find_best_embedding(query_embedding, c_id=1, threshold=0.5):
-    best_match = None
+    best_match = []
     min_distance = float('inf')
-    score = 0
+    score = []
     persons = get_all_embeddings_from_db(c_id)
 
     # Ensure query_embedding is a NumPy array
@@ -33,10 +33,10 @@ def find_best_embedding(query_embedding, c_id=1, threshold=0.5):
         distance = 1 - similarity[0, 0]  # Convert similarity to distance
         
         # Check if the distance is below the threshold and if it's the best match so far
-        if distance < min_distance and distance < threshold:
-            min_distance = distance
-            best_match = item
-            score = 1 - distance  # Similarity score between 0 and 1
+        if distance <= 70 and distance < threshold:
+            # min_distance = distance
+            best_match.append(item)
+            score.append(distance)  # Similarity score between 0 and 1
 
     return best_match, score
 

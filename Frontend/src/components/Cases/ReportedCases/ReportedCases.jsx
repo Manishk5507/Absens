@@ -38,7 +38,9 @@ function ReportedCases() {
               <MissingPersonCard
                 key={index}
                 name={person.name}
-                missingSince={person.missingSince}
+                id={person._id}
+                identity={person.identity}
+                missingSince={person?.whenFound || person?.lastSeenDate}
                 image={person.images.urls[0]}
               />
             ))

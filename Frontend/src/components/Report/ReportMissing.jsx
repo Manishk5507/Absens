@@ -41,8 +41,6 @@ const ReportMissing = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log("form data before submitting:", formData);
-    // console.log("Images before submitting:", formData.images);
 
     if (!user) {
       toast.error("You need to login first", {
@@ -85,7 +83,6 @@ const ReportMissing = () => {
       data.append("images", image); // Use the same key 'images' for all files
     });
 
-    // console.log("Form data to send:", data);
 
     const uploadToastId = toast.info(
       "Please wait while we are uploading your data...",
@@ -106,11 +103,8 @@ const ReportMissing = () => {
         }
       );
 
-      console.log("======Resp======",response.data.report);
       setTimeout(async () => {
-        console.log("unique_id============",response.data.report.unique_id)
         const id = response.data.report.unique_id;
-        console.log("unique_id=====",id)
         try {
           const saveEmbeddingsResponse = await axios.post(
             `${import.meta.env.VITE_FACE_RECOGNITION}/report/saveembeddings`,

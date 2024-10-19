@@ -29,6 +29,7 @@ const FindMissingSchema = new Schema(
     lastSeenDate: { type: Date, required: true },
     lastSeenLocation: { type: String, required: true },
     additionalInfo: { type: String, default: "" },
+    identity:{type:String, default: "Finding"},
     images: {
       urls: [
         {

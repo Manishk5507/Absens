@@ -40,8 +40,11 @@ const Search = () => {
         <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6">
           Use our AI-powered platform to search for missing people. Upload photos of your lost loved ones. If someone uploads a matching photo, our system will show all matches with over 50% similarity.
         </p>
-        <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
-          UPLOAD A PHOTO
+        <button
+        type="button"
+        onClick={() => window.location.href = "/report-the-missing"}
+         className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
+          REPORT HERE
         </button>
       </div>
     </section>
