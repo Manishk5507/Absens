@@ -9,6 +9,8 @@ export default function Profile() {
   const [photo, setPhoto] = useState("https://via.placeholder.com/150"); // Replace with the initial image URL
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  
 
   const { user, setUser } = useAuth();
 
@@ -24,25 +26,38 @@ export default function Profile() {
   });
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        country: user.country || "",
-        address: user.address || "",
-        streetAddress: user.streetAddress || "",
-        city: user.city || "",
-        state: user.state || "",
-        postalCode: user.postalCode || "",
-      });
-    }else{
-      toast.error("You have to login first.", {
-        position: "bottom-right",
-        autoClose: 3000,
-      });
-      navigate("/login",{state:{from:"/profile"}});
-    }
+    const authenticateUser = async () => {
+      // Simulating the authentication check delay
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Optional delay for simulating loading
+
+      if (user) {
+        setFormData({
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          country: user.country || "",
+          address: user.address || "",
+          streetAddress: user.streetAddress || "",
+          city: user.city || "",
+          state: user.state || "",
+          postalCode: user.postalCode || "",
+        });
+      } else {
+        toast.error("You have to login first.", {
+          position: "bottom-right",
+          autoClose: 3000,
+        });
+        navigate("/login", { state: { from: "/profile" } });
+      }
+      setLoading(false); // Set loading to false after the check is done
+    };
+
+    authenticateUser();
   }, [user, navigate]);
+
+  if (loading) {
+    return <div className="min-h-screen">Loading...</div>; // Optionally show a loading indicator
+  }
+
 
   // Function to handle input change
   const handleChange = (e) => {

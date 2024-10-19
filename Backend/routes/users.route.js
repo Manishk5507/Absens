@@ -99,6 +99,14 @@ router.get("/reset-password", (req, res) => {
   res.send("Reset Password");
 });
 
+router.get("/isAuthenticated", (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.json({ isAuthenticated: true, user: req.user });
+  } else {
+    return res.json({ isAuthenticated: false });
+  }
+});
+
 router.get("/logout", (req, res) => {
   // console.log(req.isAuthenticated());
   if (req.isAuthenticated()) {
@@ -108,7 +116,7 @@ router.get("/logout", (req, res) => {
           .status(500)
           .json({ message: "Logout failed due to an error." });
       }
-      
+
       return res.json({ message: "Successfully Logged Out" });
     });
   } else {
