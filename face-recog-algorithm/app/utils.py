@@ -1,3 +1,6 @@
+from json import dumps
+from bson import ObjectId
+from flask import jsonify
 import numpy as np
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -10,9 +13,9 @@ uri = os.getenv('MONGODB_URI')
 print("Mongo uri: ", uri)
 # print(uri)
 client = MongoClient(uri, server_api=ServerApi('1'))
-db = client['face_recognition_db']
-collection = db['embeddings']
-collection2 = db['find']
+db = client['FindrDB']
+collection = db['reportmissings']
+collection2 = db['findmissings']
 
 # Send a ping to confirm a successful connection
 try:
@@ -22,26 +25,64 @@ except Exception as e:
     print("An error occurred while connecting to MongoDB")
    
 
-def get_all_embeddings_from_db():
-    return list(collection.find({}, {'_id': 0}))  # Exclude MongoDB's default ID
+def serialize_doc(doc):
+    """Convert MongoDB document to a serializable format."""
+    # Convert ObjectId fields to strings
+    for key, value in doc.items():
+        if isinstance(value, ObjectId):
+            doc[key] = str(value)
+        elif isinstance(value, dict):
+            doc[key] = serialize_doc(value)  # Recursively serialize dicts
+        elif isinstance(value, list):
+            # Recursively serialize items in the list if they are dicts
+            doc[key] = [serialize_doc(item) if isinstance(item, dict) else item for item in value]
+    return doc
 
-def get_person(p_id):
-    return list(collection.find({'id': p_id}, {'_id': 0})) 
+def get_all_embeddings_from_db():
+    cursor = collection.find({})
+    return [serialize_doc(doc) for doc in cursor]  # Serialize each document
+
+
+def get_person(p_id, collection_id=1):
+    if(collection_id == 2):
+        cln = collection2
+    person = cln.find_one({'unique_id': p_id})  # Fetch a single person document
+    if person:
+        return person  # Serialize and return the document as JSON
+    else:
+        return jsonify({"message": "Person not found"}), 404  # Return a 404 error if not found
 
 # Function to save embeddings
-def save_embedding_to_db(embedding, p_id=1):
-    # save the embedding to the database with the person's ID
-    result = collection.update_one(
-        {"p_id": p_id},
-        {"$set": {"embedding": embedding.tolist()}},
-        upsert=True
-    )
+def save_embedding_to_db(embedding, unique_id, collection_id=1):
+    """
+    Save the embedding to the database associated with the person's unique ID.
     
-     # Check if the document was updated
-    if result.matched_count == 0:
-        return 0
-    else:
-        return 1
+    Args:
+        embedding (numpy array): The embedding to be saved.
+        unique_id (str): The unique ID of the person.
+
+    Returns:
+        int: 1 if the embedding was saved successfully, 0 if there was an error.
+    """
+    if(collection_id == 2):
+        cln = collection2
+    try:
+        # Update the document with the provided unique_id
+        result = cln.update_one(
+            {"unique_id": unique_id},  # Search by unique_id
+            {"$set": {"images.embeddings": embedding.tolist()}},  # Save the embedding as a list
+            upsert=True  # Create a new document if no match is found
+        )
+        
+        # Check if the document was inserted or updated
+        if result.modified_count > 0 or result.upserted_id is not None:
+            return 1  # Success
+        else:
+            return 0  # No changes were made
+    except Exception as e:
+        print(f"Error saving embedding: {e}")  # Print the error for debugging
+        return 0  # Indicate failure
+
     
     
 def delete_person_from_db(id):
