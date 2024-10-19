@@ -93,7 +93,8 @@ app.all("*", (req, res, next) => {
 app.use((err, req, res, next) => {
   // console.log(err);
   let { status = 500, message = "Something went wrong" } = err;
-  res.status(status).render("./places/error.ejs", { status, message });
+  console.log(status, message);
+  return;
 }); 
 // Start the server
 app.listen(PORT, () => {

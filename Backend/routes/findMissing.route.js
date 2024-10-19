@@ -3,6 +3,9 @@ const router = express.Router();
 const User = require("../models/user.model");
 const FindMissing = require("../models/findMissing.model");
 const wrapAsync = require("../utils/wrapAsync");
+const cloudinary = require("../config/cloudConfig");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 // Add a new report
 router.post("/add/:userId", async (req, res) => {

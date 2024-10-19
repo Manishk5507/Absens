@@ -6,17 +6,17 @@ import { useAuth } from "../../context/AuthContext.jsx";
 
 const ReportMissing = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    age: "",
-    gender: "",
-    height: "",
-    weight: "",
-    hairColor: "",
-    eyeColor: "",
-    whenFound: "",
-    whereFound: "",
-    additionalInfo: "",
-    image: null,
+    name: '',
+    age: '',
+    gender: '',
+    height: '',
+    weight: '',
+    hairColor: '',
+    eyeColor: '',
+    whenFound: '',
+    whereFound: '',
+    additionalInfo: '',
+    images: [], // Ensure this is initialized as an array
   });
 
   const navigate = useNavigate();
@@ -24,73 +24,118 @@ const ReportMissing = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: files ? files[0] : value,
-    }));
+    if (name === "images") {
+      // Convert FileList to an array
+      const filesArray = Array.from(files);
+      setFormData((prevData) => ({
+        ...prevData,
+        images: [...prevData.images, ...filesArray], // Concatenate new files with the existing array
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
+  
+  
+  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // console.log("form data before submitting:", formData);
+    // console.log("Images before submitting:", formData.images);
+
     if (!user) {
-      toast.error("You need to login first", {
-        position: "bottom-right",
-        autoClose: 3000,
-      });
-      navigate(`/login`);
-      return;
+        toast.error("You need to login first", {
+            position: "bottom-right",
+            autoClose: 3000,
+        });
+        navigate(`/login`);
+        return;
     }
+
+    if (formData.images.length < 2) {
+        toast.error("Please upload at least two images", {
+            position: "bottom-right",
+            autoClose: 3000,
+        });
+        return;
+    }
+
     const confirm = window.confirm("Do you accept the terms and conditions?");
     if (!confirm) {
-      return;
+        return;
     }
-    const data = {
-      ...formData,
-      user: user._id,
-      image: formData.image ? formData.image.name : "",
-    };
+
+    // Create a FormData object
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("age", formData.age);
+    data.append("gender", formData.gender);
+    data.append("height", formData.height);
+    data.append("weight", formData.weight);
+    data.append("hairColor", formData.hairColor);
+    data.append("eyeColor", formData.eyeColor);
+    data.append("whenFound", formData.whenFound);
+    data.append("whereFound", formData.whereFound);
+    data.append("additionalInfo", formData.additionalInfo);
+    data.append("user", user._id);
+
+    // Append images
+    formData.images.forEach((image) => {
+        data.append("images", image); // Use the same key 'images' for all files
+    });
+
+    // console.log("Form data to send:", data);
+
+    const uploadToastId = toast.info("Please wait while we are uploading your data...", {
+      position: "bottom-right",
+      autoClose: false, // Prevent auto close
+  });
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/add/${user._id}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/add/${user._id}`,
+            data,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
 
-      console.log(response);
+        console.log(response);
 
-      // Check for a successful response
-      toast.success(
-        "Your reportedCase has been listed successfully! Now, you can search in our database for matches.",
-        {
-          position: "bottom-right",
+        // Check for a successful response
+        toast.update(uploadToastId, {
+          render: "Your reported case has been listed successfully! Now, you can search in our database for matches.",
+          type: "success",
           autoClose: 3000,
-        }
-      );
+      });
 
-  
-      // response.data.comingFrom = "ReportMissing";
-
-      setTimeout(() => {
-        navigate("/cases/showDetails", { state: { data: response.data } });
-      }, 3000);
+        setTimeout(() => {
+            navigate("/cases/showDetails", { state: { data: response.data } });
+        }, 3000);
     } catch (error) {
-      console.error("Error submitting the form:", error);
-      toast.error(
-        "An error occurred while submitting your search. Please try again."
-      );
+        console.error("Error submitting the form:", error);
+        toast.update(uploadToastId, {
+          render: "An error occurred while submitting your search. Please try again.",
+          type: "error",
+          autoClose: 3000,
+      });
     }
-  };
+};
+
 
   return (
     <div className="mt-8 mb-8 text-black">
       <form
         onSubmit={handleSubmit}
         className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg space-y-6 sm:p-8"
+        encType="multipart/form-data"
       >
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Report Missing Person
@@ -257,17 +302,18 @@ const ReportMissing = () => {
           </div>
           <div className="form-group">
             <label
-              htmlFor="image"
+              htmlFor="images"
               className="block mb-2 text-xl font-medium text-gray-900 dark:text-black"
             >
-              Upload Photo
+              Upload Photos (at least two)
             </label>
             <input
-              name="image"
-              id="image"
+              name="images"
+              id="images"
               type="file"
               accept="image/*"
               onChange={handleChange}
+              multiple
               required
               className="input block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none"
             />

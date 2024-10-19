@@ -12,14 +12,18 @@ const ReportMissingSchema = new Schema(
     whenFound: { type: Date, required: true },
     whereFound: { type: String, required: true },
     additionalInfo: { type: String, default: "" },
-    image: { type: String, default: "" },
-    // images:{
-    //   urls:{type:Array,default:[{
-    //     type:String,
-    //     default:""
-    //   }]},
-    //   embeddings: { type: Array, default:[] }
-    // },
+    images: {
+      urls: [
+        {
+          type: String,
+          default: "",  // This is fine; you can leave it as is.
+        },
+      ],
+      embeddings: {
+        type: Array,
+        default: [],
+      },
+    },
     status: {
       type: String,
       enum: ["Pending", "Verified", "Resolved"],
