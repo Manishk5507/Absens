@@ -2,11 +2,15 @@ const express = require("express");
 const router = express.Router();
 const ReportMissing = require("../models/reportMissing.model");
 const User = require("../models/user.model");
+const cloudinary = require("../config/cloudConfig");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+const fs = require("fs");
 
 // Route to add a new missing report
-router.post("/add/:userId", async (req, res) => {
-  // console.log(req.body);
-  // console.log(req.params.userId);
+router.post("/add/:userId", upload.array("images", 8), async (req, res) => {
+  console.log("Request body:", req.body);
+  console.log("Uploaded files:", req.files);
   try {
     const {
       name,
@@ -19,15 +23,35 @@ router.post("/add/:userId", async (req, res) => {
       whenFound,
       whereFound,
       additionalInfo,
-      image,
     } = req.body;
 
-    // Assuming the authenticated user ID is available in req.user
     const userId = req.params.userId;
 
     if (!userId) {
       return res.status(401).json({ message: "User not authenticated" });
     }
+
+    // Ensure that at least two images are uploaded
+    if (!req.files || req.files.length < 2) {
+      return res
+        .status(400)
+        .json({ message: "At least two images are required" });
+    }
+
+    // Upload images to Cloudinary
+    console.log("Uploading images to Cloudinary...");
+    const imageUploadPromises = req.files.map((file) =>
+      cloudinary.uploader.upload(file.path, { folder: "missing_reports" })
+    );
+
+    const uploadResults = await Promise.all(imageUploadPromises);
+    console.log("Cloudinary upload results:", uploadResults);
+
+    // Create the images object structure
+    const images = {
+      urls: uploadResults.map((result) => result.secure_url),
+      embeddings: [], // Set this to any embedding data you might want to store
+    };
 
     // Create a new report instance
     const newReportMissing = new ReportMissing({
@@ -41,7 +65,7 @@ router.post("/add/:userId", async (req, res) => {
       whenFound,
       whereFound,
       additionalInfo,
-      image,
+      images,
       user: userId,
     });
 
@@ -51,9 +75,13 @@ router.post("/add/:userId", async (req, res) => {
     const report = await newReportMissing.save();
     user.reportedCases.push(report._id);
     await user.save();
+
+    // Delete uploaded files from the server
+    req.files.forEach((file) => fs.unlinkSync(file.path));
+
     res.status(201).json({ message: "Report added successfully", report });
   } catch (error) {
-    console.log(error);
+    console.error("Error adding report:", error);
     res
       .status(500)
       .json({ message: "Error adding report", error: error.message });
