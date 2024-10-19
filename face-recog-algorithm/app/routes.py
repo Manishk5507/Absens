@@ -23,83 +23,116 @@ def allowed_file(filename):
 @app.route('/', methods=['GET'])
 def home():
     persons = get_all_embeddings_from_db()
-    return jsonify({"users":persons})
+    print(persons)
+    return jsonify({"persons": persons}), 200
    
    
-@app.route('/report', methods=['POST'])
+@app.route('/report/saveembeddings', methods=['POST'])
 def report():
-    # person = get_person(id)
-    person = [request.form.get('url1'), request.form.get('url2')]
+    # Extract unique_id from JSON request
+    p_id = request.get_json().get('unique_id')
+    
+    # Fetch the person from the database
+    person = get_person(p_id)
+    
+    # Handle case where the person is not found
     if not person:
         return jsonify({"message": 'Person not found'}), 404
-    
-    images = person
-    embeddings = []
-    for url in images:
-        response = requests.get(url)
-        if response.status_code != 200:
-            return jsonify({"message": 'Failed to download image from URL'}), 400
-        
-        # Convert the image content to a NumPy array
-        file_bytes = np.asarray(bytearray(response.content), dtype=np.uint8)
-        image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-        if image is None:
-                return jsonify({"error": "Failed to decode image"}), 400
-        
-        image = cv2.resize(image, (224, 224))  # Resize image to reduce memory usage
-        embedding = feature_extractor(image)   
-        if embedding is None:
-                return jsonify ({"message": 'No face detected in the image: {url}'})
-        else:
-            embeddings.append(embedding) # Store the embedding for this image
-            
-            
-    # make average of all embeddings
-    avg_embedding = np.mean(embeddings, axis=0)
-    # Save image embeddings to the database
-    response = save_embedding_to_db(avg_embedding, p_id=1)
-    if response == 0:
-        return jsonify({"message": 'Failed to save embedding to the database'}), 500
-    return jsonify({"message": 'Embedding saved successfully'}), 200
-            
+    urls = []
+    errors = []
+    for url in person['images']['urls']:
+        urls.append(url)
+    print(urls)
 
-@app.route('/search', methods=['POST'])
-def search():
-    url = request.json.get('url')# Get image URL from request body
+    # Proceed only if there are URLs
+    if not urls:
+        return jsonify({"message": 'No image URLs found'}), 404
+
+    embeddings = []
     
-    if not url:
-        return jsonify({"message": 'No image URL provided'}), 400
-    
-    try:
-        # Fetch the image from the URL
+    for url in urls:
+        print(f"Processing URL: {url}")
         response = requests.get(url)
+        
+        # Check for successful image download
         if response.status_code != 200:
-            return jsonify({"message": 'Failed to download image from URL'}), 400
+            return jsonify({"message": f'Failed to download image from URL: {url}'}), 400
         
         # Convert the image content to a NumPy array
         file_bytes = np.asarray(bytearray(response.content), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-        
+
+        # Check if the image was decoded successfully
         if image is None:
-            return jsonify({"error": "Failed to decode image"}), 400
+            return jsonify({"error": f"Failed to decode image from URL: {url}"}), 400
         
         # Resize image to reduce memory usage
-        image = cv2.resize(image, (224, 224)) 
+        image = cv2.resize(image, (224, 224))
+        embedding = feature_extractor(image)
         
-        # Extract embeddings
-        embeddings = feature_extractor(image)
+        # Check if embedding was created successfully
+        if embedding is None:
+            errors.append(url)
+        else:
+            embeddings.append(embedding)  # Store the embedding for this image
+
+    # Calculate average of all embeddings
+    if embeddings:
+        avg_embedding = np.mean(embeddings, axis=0)
+        save_embedding_to_db(avg_embedding, p_id)
+        return jsonify({"embeddings": avg_embedding.tolist()}), 200
+    else:
+        return jsonify({"message": 'No embeddings to save'}), 400
+            
+
+@app.route('/find/saveembeddings', methods=['POST'])
+def search():
+    p_id = request.get_json().get('unique_id')# Get image URL from request body
+    
+    person = get_person(p_id, 2) # fetch person from collection2
+    
+    if not person:
+        return jsonify({"message": 'Person not found'}), 404
+    urls = []
+    errors = []
+    for url in person['images']['urls']:
+        urls.append(url)
+    
+    if not urls:
+        return jsonify({"message": 'No image URLs found'}), 404
+
+    embeddings = []
+    for url in urls:
+        print(f"Processing URL: {url}")
+        response = requests.get(url)
         
-        if embeddings is None:
-            return jsonify({"message": 'No face detected in the image from URL'}), 200
+        # Check for successful image download
+        if response.status_code != 200:
+            return jsonify({"message": f'Failed to download image from URL: {url}'}), 400
         
-        # Find the best match for the extracted embeddings
-        best_match, score = find_best_embedding(embeddings)
+        # Convert the image content to a NumPy array
+        file_bytes = np.asarray(bytearray(response.content), dtype=np.uint8)
+        image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+        # Check if the image was decoded successfully
+        if image is None:
+            return jsonify({"error": f"Failed to decode image from URL: {url}"}), 400
         
-        return jsonify({'message': 'Person found successfully',
-                        "person": best_match,
-                        "score": score}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Resize image to reduce memory usage
+        image = cv2.resize(image, (224, 224))
+        embedding = feature_extractor(image)
+        
+        # Check if embedding was created successfully
+        if embedding is None:
+            errors.append(url)
+        else:
+            embeddings.append(embedding)  # Store the embedding for this image
+
+    # Calculate average of all embeddings
+    embeddings = np.mean(embeddings, axis=0)
+    # best_match = find_best_embedding(embeddings)
+    save_embedding_to_db(embeddings, p_id, 2)
+    return jsonify({"message": "Image embeddings saved succesfully"}), 200
     
 
 @app.route('/delete/<int:id>', methods=['DELETE'])

@@ -10,6 +10,7 @@ function Showdetails() {
     if (data && Object.keys(data).length > 0) {
       console.log("data", data);
       const info = data.report || data;
+      console.log("info: ",info.images.urls[0]);
       setReport(info);
     }
   }, [data]);
@@ -24,52 +25,52 @@ function Showdetails() {
             {report?.name || "Unknown"}
           </h2>
           <div className="space-y-2">
-            <p>
+            <p className="my-8 border-b-2 ">
               <strong>Age:</strong> {report?.age || "N/A"}
             </p>
-            <p>
+            <p className="my-8 border-b-2 ">
               <strong>Gender:</strong> {report?.gender || "N/A"}
             </p>
-            <p>
+            <p className="my-8 border-b-2 ">
               <strong>Height:</strong> {report?.height || "0"} cm
             </p>
-            <p>
+            <p className="my-8 border-b-2 ">
               <strong>Weight:</strong> {report?.weight || "0"} kg
             </p>
-            <p>
+            <p className="my-8 border-b-2 ">
               <strong>Hair Color:</strong> {report?.hairColor || "Black"}
             </p>
-            <p>
+            <p className="my-8 border-b-2 ">
               <strong>Eye Color:</strong> {report?.eyeColor || "Black"}
             </p>
             {report?.relationshipWithMissing && (
-              <p>
+              <p className="my-8 border-b-2 ">
                 <strong>Relationship:</strong> {report.relationshipWithMissing}
               </p>
             )}
             {report?.lastSeenDate && (
-              <p>
+              <p className="my-8 border-b-2 ">
                 <strong>Last Seen Date:</strong>{" "}
                 {new Date(report.lastSeenDate).toDateString()}
               </p>
             )}
             {report?.lastSeenLocation && (
-              <p>
+              <p className="my-8 border-b-2 ">
                 <strong>Last Seen Location:</strong> {report.lastSeenLocation}
               </p>
             )}
             {report?.whenFound && (
-              <p>
+              <p className="my-8 border-b-2 ">
                 <strong>When Found:</strong>{" "}
                 {new Date(report.whenFound).toDateString()}
               </p>
             )}
             {report?.whereFound && (
-              <p>
+              <p className="my-8 border-b-2 ">
                 <strong>Where Found:</strong> {report.whereFound}
               </p>
             )}
-            <p>
+            <p className="my-8 border-b-2 ">
               <strong>Additional Info:</strong>{" "}
               {report?.additionalInfo || "N/A"}
             </p>
@@ -89,11 +90,11 @@ function Showdetails() {
 
         {/* Image Section */}
         <div className="flex-1">
-          {report?.image ? (
+          {report?.images ? (
             <img
-              src={report.image}
+              src={report.images.urls[0]}
               alt={report.name}
-              className="w-full h-auto max-h-80 object-cover rounded-lg shadow-md"
+              className="w-[70%] h-[70%] object-cover rounded-lg shadow-md"
             />
           ) : (
             <div className="w-full h-auto max-h-80 bg-gray-200 flex items-center justify-center rounded-lg shadow-md">
@@ -102,6 +103,15 @@ function Showdetails() {
           )}
         </div>
       </div>
+      <div className="mt-6 flex items-center justify-end gap-x-6">
+          <button
+            type="submit"
+            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Search Person
+          </button>
+        </div>
+
     </div>
   );
 }

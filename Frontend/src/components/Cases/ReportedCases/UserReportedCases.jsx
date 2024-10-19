@@ -24,9 +24,10 @@ function UserReportedCases() {
             people.map((person, index) => (
               <MissingPersonCard
                 key={index}
+                id={person._id}
                 name={person.name}
                 missingSince={person.whenFound}
-                image={person.image}
+                image={person.images.urls[0]}
               />
             ))
           ) : (

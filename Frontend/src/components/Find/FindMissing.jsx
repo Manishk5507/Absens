@@ -17,7 +17,7 @@ const FindMissing = () => {
     lastSeenDate: "",
     lastSeenLocation: "",
     additionalInfo: "",
-    image: null,
+    images: [],
   });
 
   const { user } = useAuth();
@@ -25,15 +25,23 @@ const FindMissing = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: files ? files[0] : value,
-    }));
+
+    if (name === "images") {
+      setFormData((prevData) => ({
+        ...prevData,
+        images: [...files], // Store all selected files
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast.error("You need to login first", {
         position: "bottom-right",
@@ -48,38 +56,62 @@ const FindMissing = () => {
       return;
     }
 
-    const data = {
-      ...formData,
-      image: formData.image ? formData.image.name : "", // send only the image name or an empty string
-    };
+    // Check if at least two images are uploaded
+    if (formData.images.length < 2) {
+      toast.error("Please upload at least two images.", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    const formDataToSend = new FormData();
+    // Append other form fields
+    for (const key in formData) {
+      if (key === "images") {
+        // Append all images to FormData
+        for (let i = 0; i < formData.images.length; i++) {
+          formDataToSend.append("images", formData.images[i]);
+        }
+      } else {
+        formDataToSend.append(key, formData[key]);
+      }
+    }
+
+    const uploadToastId = toast.info("Please wait while we are uploading your data...", {
+      position: "bottom-right",
+      autoClose: false, // Prevent auto close
+  });
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/findMissing/add/${user._id}`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/findMissing/add/${user._id}`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Use multipart/form-data for file uploads
+          },
+        }
+      );
 
-      
-        toast.success(
-          "Your searching has been listed successfully! Now, you can search in our database for matches.",
-          {
-            position: "bottom-right",
-            autoClose: 3000,
-          }
-        );
+      toast.update(uploadToastId, {
+        render: "Your Searching case has been listed successfully! Now, you can search in our database for matches.",
+        type: "success",
+        autoClose: 3000,
+    });
 
-        // response.data.comingFrom = "FindMissing";
+      // response.data.comingFrom = "FindMissing";
 
-        setTimeout(() => {
-          navigate(`/cases/showDetails`,{ state: { data: response.data } });
-        }, 3000);
-      
+      setTimeout(() => {
+        navigate(`/cases/showDetails`, { state: { data: response.data } });
+      }, 3000);
     } catch (error) {
       console.error("Error submitting the form:", error);
-      toast.error(
-        "An error occurred while submitting your search. Please try again."
-      );
+      toast.update(uploadToastId, {
+        render: "An error occurred while submitting your search. Please try again.",
+        type: "error",
+        autoClose: 3000,
+    });
     }
   };
 
@@ -88,6 +120,7 @@ const FindMissing = () => {
       <form
         onSubmit={handleSubmit}
         className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg space-y-6 sm:p-8"
+        encType="multipart/form-data"
       >
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Find Missing Person
@@ -273,17 +306,18 @@ const FindMissing = () => {
           </div>
           <div className="form-group sm:col-span-2">
             <label
-              htmlFor="photos"
+              htmlFor="images"
               className="block mb-2 text-xl font-medium text-gray-900 dark:text-black"
             >
               Upload Photo
             </label>
             <input
-              name="image"
-              id="image"
+              name="images"
+              id="images"
               type="file"
               accept="image/*"
               onChange={handleChange}
+              multiple
               required
               className="input block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none"
             />

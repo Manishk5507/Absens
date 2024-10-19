@@ -2,9 +2,23 @@ const { model, Schema } = require("mongoose");
 
 const FindMissingSchema = new Schema(
   {
-    name: { type: String, required: true },
-    age: { type: Number, min: 0, required: true },
-    gender: { type: String, enum: ["male", "female", "other","Male","Female","Other","MALE","FEMALE","OTHER"], required: true },
+    name: { type: String, default: "" },
+    age: { type: Number, default: 0 },
+    gender: {
+      type: String,
+      enum: [
+        "male",
+        "female",
+        "other",
+        "Male",
+        "Female",
+        "Other",
+        "MALE",
+        "FEMALE",
+        "OTHER",
+      ],
+      required: true,
+    },
     height: { type: String, default: "" },
     weight: { type: String, default: "" },
     hairColor: { type: String, default: "" },
@@ -13,14 +27,18 @@ const FindMissingSchema = new Schema(
     lastSeenDate: { type: Date, required: true },
     lastSeenLocation: { type: String, required: true },
     additionalInfo: { type: String, default: "" },
-    image: { type: String,default:"" },
-    // images:{
-    //   urls:{type:Array,default:[{
-    //     type:String,
-    //     default:""
-    //   }]},
-    //   embeddings: { type: Array, default:[] }
-    // },
+    images: {
+      urls: [
+        {
+          type: String,
+          default: "", // This is fine; you can leave it as is.
+        },
+      ],
+      embeddings: {
+        type: Array,
+        default: [],
+      },
+    },
     status: {
       type: String,
       enum: ["Pending", "Resolved", "Closed"],
