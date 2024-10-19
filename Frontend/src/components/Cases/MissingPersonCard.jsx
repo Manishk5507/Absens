@@ -8,7 +8,6 @@ const MissingPersonCard = ({ id, image = "", name = "", missingSince = "" }) => 
   const [loading, setLoading] = useState(false);
 
   const handleOnClick = async () => {
-    console.log(id);
     setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/get/${id}`);

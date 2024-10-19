@@ -25,9 +25,7 @@ def allowed_file(filename):
 @app.route('/', methods=['GET'])
 def home():
     persons = get_all_embeddings_from_db()
-    # print(persons)
-    return jsonify({"persons": persons,
-                    "Message": "Hello Manish"}), 200
+    return jsonify({"persons": persons}), 200
    
    
 @app.route('/report/saveembeddings', methods=['OPTIONS','POST'])
@@ -36,7 +34,6 @@ def report():
         return '',200
     # Extract unique_id from JSON request
     p_id = request.get_json().get('unique_id')
-    print(p_id)
     
     # Fetch the person from the database
     person = get_person(p_id)
@@ -46,10 +43,8 @@ def report():
         return jsonify({"message": 'Person not found'}), 404
     urls = []
     errors = []
-    print(person)
     for url in person['images']['urls']:
         urls.append(url)
-    print(urls)
 
     # Proceed only if there are URLs
     if not urls:
@@ -152,13 +147,10 @@ def delete(id):
 
 
 def find_best(p_id, search_type=1):
-    print("=================",p_id)
     if search_type == 1:
         person = get_person(p_id, 2)
     else:
         person = get_person(p_id, 1)
-    print("=========================================================================")
-    print(person)
     if not person:
         return jsonify({"message": 'Person not found'}), 404
     embedding = person['images']['embeddings']

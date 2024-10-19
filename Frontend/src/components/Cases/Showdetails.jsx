@@ -9,23 +9,19 @@ function Showdetails() {
 
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
-      console.log("data", data);
       const info = data.report || data;
-      console.log("info: ", info.images.urls[0]);
       setReport(info);
     }
   }, [data]);
 
   const handleSearch = async (id,lastSeenDate) => {
-    console.log("idddddd===", id);
-    console.log("lastSeenDate===", lastSeenDate);
     let searchopt=""
     if(lastSeenDate===undefined){
       searchopt="report"
     }else{
       searchopt="find"
     }
-    console.log(searchopt)
+    
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_FACE_RECOGNITION}/${searchopt}/search`,
@@ -38,8 +34,6 @@ function Showdetails() {
           },
         }
       );
-      console.log("respsssss===", response);
-      console.log("resssdataa", response.data);
     } catch (error) {
       console.log(error);
     }

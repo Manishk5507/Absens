@@ -1,4 +1,3 @@
-from json import dumps
 from bson import ObjectId
 from flask import jsonify
 import numpy as np
