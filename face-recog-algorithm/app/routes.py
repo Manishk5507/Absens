@@ -5,9 +5,11 @@ import cv2
 import numpy as np
 from app.feature_extractor import feature_extractor
 from app.find_best_embeddings import find_best_embedding
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Allow all origins
+
 
 # Set upload folder and allowed file types
 UPLOAD_FOLDER = 'static/uploads'
@@ -23,14 +25,18 @@ def allowed_file(filename):
 @app.route('/', methods=['GET'])
 def home():
     persons = get_all_embeddings_from_db()
-    print(persons)
-    return jsonify({"persons": persons}), 200
+    # print(persons)
+    return jsonify({"persons": persons,
+                    "Message": "Hello Manish"}), 200
    
    
-@app.route('/report/saveembeddings', methods=['POST'])
+@app.route('/report/saveembeddings', methods=['OPTIONS','POST'])
 def report():
+    if request.method == 'OPTIONS':
+        return '',200
     # Extract unique_id from JSON request
     p_id = request.get_json().get('unique_id')
+    print(p_id)
     
     # Fetch the person from the database
     person = get_person(p_id)
@@ -40,6 +46,7 @@ def report():
         return jsonify({"message": 'Person not found'}), 404
     urls = []
     errors = []
+    print(person)
     for url in person['images']['urls']:
         urls.append(url)
     print(urls)
@@ -142,3 +149,23 @@ def delete(id):
         return jsonify({"message": 'Person not found'}), 404
     
     return jsonify({"Person deleted succesfully"}), 200
+
+
+def find_best(search_type=1):
+    p_id = request.get_json().get('unique_id')
+    person = get_person(p_id, search_type)
+    if not person:
+        return jsonify({"message": 'Person not found'}), 404
+    embedding = person['images']['embeddings']
+    if embedding is None:
+        return jsonify({"message": 'No embeddings found'}), 404
+    best_match, score = find_best_embedding(embedding, search_type)
+    return jsonify({"best_match": best_match, "score": score}), 200
+
+@app.route('/find/search', methods=['POST'])
+def find_search():
+    return find_best()
+
+@app.route('/report/search', methods=['POST'])
+def report_search():
+    return find_best(2)

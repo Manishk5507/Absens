@@ -38,12 +38,16 @@ def serialize_doc(doc):
             doc[key] = [serialize_doc(item) if isinstance(item, dict) else item for item in value]
     return doc
 
-def get_all_embeddings_from_db():
-    cursor = collection.find({})
+def get_all_embeddings_from_db(collection_id=1):
+    cln = collection
+    if(collection_id == 2):
+        cln = collection2
+    cursor = cln.find({})
     return [serialize_doc(doc) for doc in cursor]  # Serialize each document
 
 
 def get_person(p_id, collection_id=1):
+    cln = collection
     if(collection_id == 2):
         cln = collection2
     person = cln.find_one({'unique_id': p_id})  # Fetch a single person document
@@ -64,6 +68,7 @@ def save_embedding_to_db(embedding, unique_id, collection_id=1):
     Returns:
         int: 1 if the embedding was saved successfully, 0 if there was an error.
     """
+    cln = collection
     if(collection_id == 2):
         cln = collection2
     try:

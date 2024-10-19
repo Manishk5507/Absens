@@ -6,14 +6,16 @@ from app.utils import get_all_embeddings_from_db
 def average_embedding(embeddings):
     return np.mean(embeddings, axis=0)
 
-def find_best_embedding(query_embedding, threshold=0.5):
+def find_best_embedding(query_embedding, c_id=1,  threshold=0.5):
     best_match = None
     min_distance = float('inf')
     score = 0
-    persons = get_all_embeddings_from_db()
+    persons = get_all_embeddings_from_db(c_id)
 
     for item in persons:
         embedding = item['embedding']
+        if embedding is None:
+            continue
         
         # Calculate cosine similarity
         if isinstance(embedding, list):
