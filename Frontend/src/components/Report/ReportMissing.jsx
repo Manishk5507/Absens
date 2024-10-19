@@ -6,16 +6,16 @@ import { useAuth } from "../../context/AuthContext.jsx";
 
 const ReportMissing = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    age: '',
-    gender: '',
-    height: '',
-    weight: '',
-    hairColor: '',
-    eyeColor: '',
-    whenFound: '',
-    whereFound: '',
-    additionalInfo: '',
+    name: "",
+    age: "",
+    gender: "",
+    height: "",
+    weight: "",
+    hairColor: "",
+    eyeColor: "",
+    whenFound: "",
+    whereFound: "",
+    additionalInfo: "",
     images: [], // Ensure this is initialized as an array
   });
 
@@ -38,10 +38,6 @@ const ReportMissing = () => {
       }));
     }
   };
-  
-  
-  
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,25 +45,25 @@ const ReportMissing = () => {
     // console.log("Images before submitting:", formData.images);
 
     if (!user) {
-        toast.error("You need to login first", {
-            position: "bottom-right",
-            autoClose: 3000,
-        });
-        navigate(`/login`);
-        return;
+      toast.error("You need to login first", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      navigate(`/login`);
+      return;
     }
 
     if (formData.images.length < 2) {
-        toast.error("Please upload at least two images", {
-            position: "bottom-right",
-            autoClose: 3000,
-        });
-        return;
+      toast.error("Please upload at least two images", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      return;
     }
 
     const confirm = window.confirm("Do you accept the terms and conditions?");
     if (!confirm) {
-        return;
+      return;
     }
 
     // Create a FormData object
@@ -86,49 +82,64 @@ const ReportMissing = () => {
 
     // Append images
     formData.images.forEach((image) => {
-        data.append("images", image); // Use the same key 'images' for all files
+      data.append("images", image); // Use the same key 'images' for all files
     });
 
     // console.log("Form data to send:", data);
 
-    const uploadToastId = toast.info("Please wait while we are uploading your data...", {
-      position: "bottom-right",
-      autoClose: false, // Prevent auto close
-  });
+    const uploadToastId = toast.info(
+      "Please wait while we are uploading your data...",
+      {
+        position: "bottom-right",
+        autoClose: false, // Prevent auto close
+      }
+    );
 
     try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/add/${user._id}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log(response);
+      const id = response.data._id;
+      try {
         const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/api/reportMissing/add/${user._id}`,
-            data,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            }
+          `${import.meta.env.VITE_FACE_RECOGNITION}/api/search/`,
+          { id }
         );
 
         console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
 
-        // Check for a successful response
-        toast.update(uploadToastId, {
-          render: "Your reported case has been listed successfully! Now, you can search in our database for matches.",
-          type: "success",
-          autoClose: 3000,
+      // Check for a successful response
+      toast.update(uploadToastId, {
+        render:
+          "Your reported case has been listed successfully! Now, you can search in our database for matches.",
+        type: "success",
+        autoClose: 3000,
       });
 
-        setTimeout(() => {
-            navigate("/cases/showDetails", { state: { data: response.data } });
-        }, 3000);
+      setTimeout(() => {
+        navigate("/cases/showDetails", { state: { data: response.data } });
+      }, 3000);
     } catch (error) {
-        console.error("Error submitting the form:", error);
-        toast.update(uploadToastId, {
-          render: "An error occurred while submitting your search. Please try again.",
-          type: "error",
-          autoClose: 3000,
+      console.error("Error submitting the form:", error);
+      toast.update(uploadToastId, {
+        render:
+          "An error occurred while submitting your search. Please try again.",
+        type: "error",
+        autoClose: 3000,
       });
     }
-};
-
+  };
 
   return (
     <div className="mt-8 mb-8 text-black">
@@ -280,6 +291,7 @@ const ReportMissing = () => {
               name="whereFound"
               id="whereFound"
               onChange={handleChange}
+              required
               placeholder="Where the person was found"
               className="input block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none"
             />
