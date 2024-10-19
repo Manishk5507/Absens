@@ -102,15 +102,13 @@ router.get("/getAll", async (req, res) => {
 
 // Route to get a specific report by ID
 router.get("/get/:id", async (req, res) => {
+  console.log(req.params.id);
   try {
     // Find the report by ID and populate the 'user' field
-    const report = await ReportMissing.findById(req.params.id).populate(
-      "user",
-      "username email"
-    ); // Adjust the fields as needed
+    const report = await ReportMissing.findById(req.params.id);
 
     if (!report) {
-      return res.status(404).json({ message: "Report not found" });
+      return res.status(404).json({ error: "Report not found" });
     }
 
     res.status(200).json(report);

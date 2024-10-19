@@ -44,7 +44,7 @@ const Vision = () => {
           <hr className="mx-auto w-12 border-b-2 border-gray-400 mb-4" />
           <p className="text-gray-600">
             Volunteers contribute by uploading photos and information to grow
-            Findr’s database. Their involvement accelerates the process of
+            Absens database. Their involvement accelerates the process of
             identifying and reuniting missing people.
           </p>
         </div>
@@ -52,13 +52,13 @@ const Vision = () => {
         {/* OUR COMMUNITY */}
         <div className="text-center fade-in opacity-0 translate-y-10 transition-all duration-700 delay-200">
           <h3 className="text-xl font-semibold mb-4 text-gray-800">
-            OUR COMMUNITY
+            OUR VISION
           </h3>
           <hr className="mx-auto w-12 border-b-2 border-gray-400 mb-4" />
           <p className="text-gray-600">
-            Findr’s community works together to reunite families by contributing
-            to the database and sharing crucial information, creating a powerful
-            network of support.
+            Our vision is to reunite families by their missing loved ones by
+            providing a platform where people can report missing persons and
+            find missing persons.
           </p>
         </div>
       </div>

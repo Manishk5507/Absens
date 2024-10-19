@@ -26,6 +26,7 @@ function UserFindingCases() {
               <MissingPersonCard
                 key={index}
                 id={person._id}
+                identity={person.identity}
                 name={person.name}
                 missingSince={person.lastSeenDate}
                 image={person.images.urls[0]}
