@@ -58,7 +58,7 @@ const Login = () => {
           autoClose: 1000,
         });
         setUser(data.user); // Update to use username, email, and _id
-        const redirectTo = location.state?.from?.pathname || '/';
+        const redirectTo = location.state?.from || '/';
         console.log(redirectTo);
         setTimeout(() => navigate(redirectTo, { replace: true }), 1300); // Redirect after 3 seconds
       } else {

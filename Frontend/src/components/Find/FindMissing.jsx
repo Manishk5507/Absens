@@ -47,7 +47,7 @@ const FindMissing = () => {
         position: "bottom-right",
         autoClose: 3000,
       });
-      navigate(`/login`);
+      navigate(`/login`, { state: { from: "/findMissing" } });
       return;
     }
 
@@ -78,10 +78,13 @@ const FindMissing = () => {
       }
     }
 
-    const uploadToastId = toast.info("Please wait while we are uploading your data...", {
-      position: "bottom-right",
-      autoClose: false, // Prevent auto close
-  });
+    const uploadToastId = toast.info(
+      "Please wait while we are uploading your data...",
+      {
+        position: "bottom-right",
+        autoClose: false, // Prevent auto close
+      }
+    );
 
     try {
       const response = await axios.post(
@@ -94,11 +97,32 @@ const FindMissing = () => {
         }
       );
 
+      setTimeout(async () => {
+        const id = response.data.unique_id;
+        try {
+          const saveEmbeddingsResponse = await axios.post(
+            `${import.meta.env.VITE_FACE_RECOGNITION}/find/saveembeddings`,
+            {
+              unique_id: id,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log(saveEmbeddingsResponse);
+        } catch (error) {
+          console.log(error);
+        }
+      }, 10000);
+
       toast.update(uploadToastId, {
-        render: "Your Searching case has been listed successfully! Now, you can search in our database for matches.",
+        render:
+          "Your Searching case has been listed successfully! Now, you can search in our database for matches.",
         type: "success",
         autoClose: 3000,
-    });
+      });
 
       // response.data.comingFrom = "FindMissing";
 
@@ -108,10 +132,11 @@ const FindMissing = () => {
     } catch (error) {
       console.error("Error submitting the form:", error);
       toast.update(uploadToastId, {
-        render: "An error occurred while submitting your search. Please try again.",
+        render:
+          "An error occurred while submitting your search. Please try again.",
         type: "error",
         autoClose: 3000,
-    });
+      });
     }
   };
 

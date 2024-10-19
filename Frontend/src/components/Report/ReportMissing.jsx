@@ -49,7 +49,7 @@ const ReportMissing = () => {
         position: "bottom-right",
         autoClose: 3000,
       });
-      navigate(`/login`);
+      navigate(`/login`, {state: {from: "/reportMissing"}});
       return;
     }
 
@@ -107,17 +107,25 @@ const ReportMissing = () => {
       );
 
       console.log(response);
-      const id = response.data._id;
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_FACE_RECOGNITION}/api/search/`,
-          { id }
-        );
-
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
+      setTimeout(async () => {
+        const id = response.data.unique_id;
+        try {
+          const saveEmbeddingsResponse = await axios.post(
+            `${import.meta.env.VITE_FACE_RECOGNITION}/report/saveembeddings`,
+            {
+              unique_id: id,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log(saveEmbeddingsResponse);
+        } catch (error) {
+          console.log(error);
+        }
+      }, 10000);
 
       // Check for a successful response
       toast.update(uploadToastId, {
