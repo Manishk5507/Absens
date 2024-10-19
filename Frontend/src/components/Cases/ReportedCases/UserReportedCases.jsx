@@ -26,7 +26,7 @@ function UserReportedCases() {
                 key={index}
                 name={person.name}
                 missingSince={person.whenFound}
-                image={person.image}
+                image={person.images.urls[0]}
               />
             ))
           ) : (

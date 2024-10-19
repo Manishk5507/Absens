@@ -9,8 +9,8 @@ const fs = require("fs");
 
 // Route to add a new missing report
 router.post("/add/:userId", upload.array("images", 8), async (req, res) => {
-  console.log("Request body:", req.body);
-  console.log("Uploaded files:", req.files);
+  // console.log("Request body:", req.body);
+  // console.log("Uploaded files:", req.files);
   try {
     const {
       name,

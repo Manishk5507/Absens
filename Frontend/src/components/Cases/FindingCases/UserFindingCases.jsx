@@ -12,6 +12,7 @@ function UserFindingCases() {
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
       console.log("data", data);
+      
       setPeople(data);
     }
   }, [data]);
@@ -26,7 +27,7 @@ function UserFindingCases() {
                 key={index}
                 name={person.name}
                 missingSince={person.lastSeenDate}
-                image={person.image}
+                image={person.images.urls[0]}
               />
             ))
           ) : (
