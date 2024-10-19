@@ -98,8 +98,8 @@ const FindMissing = () => {
       );
 
       setTimeout(async () => {
-        console.log(response.data)
-        console.log(response.data.report);
+        // console.log(response.data)
+        // console.log(response.data.report);
         const id = response.data.report.unique_id;
         try {
           const saveEmbeddingsResponse = await axios.post(
@@ -113,7 +113,7 @@ const FindMissing = () => {
               },
             }
           );
-          console.log(saveEmbeddingsResponse);
+          // console.log(saveEmbeddingsResponse);
         } catch (error) {
           console.log(error);
         }

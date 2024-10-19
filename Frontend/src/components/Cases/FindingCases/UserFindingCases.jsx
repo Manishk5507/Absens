@@ -11,7 +11,7 @@ function UserFindingCases() {
 
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
-      console.log("data", data);
+      // console.log("data", data);
       
       setPeople(data);
     }

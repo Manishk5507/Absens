@@ -9,6 +9,7 @@ const User = require("./models/user.model");
 const userRoutes = require("./routes/users.route");
 const findMissingRoutes = require("./routes/findMissing.route");
 const reportMissingRoutes = require("./routes/reportMissing.route");
+const MongoStore = require("connect-mongo");
 
 const PORT = process.env.PORT || 3001;
 
@@ -50,9 +51,14 @@ app.use(
     secret: process.env.SECRET || "dkjfbdfjbdjfdb",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: dbUrl,
+      collectionName: "sessions",
+      ttl:  7 * 24 * 60 * 60, // Sessions last for 3 hours
+    }),
     cookie: {
-      secure: false, // Set to true if using HTTPS
-      maxAge: 180 * 60 * 1000, // Example: 3 hours
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
     },
   })
 );

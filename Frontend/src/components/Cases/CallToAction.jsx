@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const CallToAction = () => {
   const navigate = useNavigate();
   const hanldeClick = () => {
-    navigate("/reportMissing");
+    navigate("/report-the-missing");
   };
   return (
     <div className="bg-[#CBCACA] p-8 lg:p-16  text-[Poppins] text-black tracking-wide ">

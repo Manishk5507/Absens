@@ -101,7 +101,7 @@ export default function Profile() {
       // Check if the response is successful
       if (response.status === 200) {
         const data = response.data; // This will contain the reported cases
-        console.log("data send", data);
+        // console.log("data send", data);
         navigate("/cases/userReportedCases", { state: { data: data } });
       } else {
         toast.error("Failed to fetch reported cases", {
@@ -128,10 +128,10 @@ export default function Profile() {
         }/api/findMissing/user-finding-cases/${user._id}`
       );
       const data = await response.data;
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         // This will contain the reported cases
-        console.log("data send", data);
+        // console.log("data send", data);
         navigate("/cases/userFindingCases", { state: { data: data } });
       } else {
         toast.error("Failed to fetch reported cases", {

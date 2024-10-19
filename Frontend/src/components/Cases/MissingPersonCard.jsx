@@ -17,7 +17,7 @@ const MissingPersonCard = ({ id, image = "", name = "", identity="" }) => {
     }
 
     setLoading(true);
-    console.log(`${import.meta.env.VITE_BACKEND_URL}/api/${url}/get/${id}`)
+    // console.log(`${import.meta.env.VITE_BACKEND_URL}/api/${url}/get/${id}`)
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${url}/get/${id}`);
       if (!response.ok) {
@@ -25,7 +25,7 @@ const MissingPersonCard = ({ id, image = "", name = "", identity="" }) => {
         return;
       }
       const data = await response.json();
-      console.log("=====================",data);
+      // console.log("=====================",data);
       // Navigate to the show details page with the fetched data
       navigate("/cases/showDetails", { state: { data: data } });
     } catch (error) {

@@ -10,7 +10,7 @@ function UserReportedCases() {
   const { data } = location.state || [];
 
   useEffect(() => {
-    console.log("data", data);
+    // console.log("data", data);
     if (data && Object.keys(data).length > 0) {
       setPeople(data);
     }
