@@ -1,7 +1,9 @@
 const { Schema, model } = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const ReportMissingSchema = new Schema(
   {
+    unique_id: { type: String, default: uuidv4 },
     name: { type: String, default: "" },
     age: { type: Number, default: "" },
     gender: { type: String, default: "" },

@@ -49,7 +49,7 @@ const ReportMissing = () => {
         position: "bottom-right",
         autoClose: 3000,
       });
-      navigate(`/login`);
+      navigate(`/login`, {state: {from: "/reportMissing"}});
       return;
     }
 

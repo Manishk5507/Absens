@@ -47,7 +47,7 @@ const FindMissing = () => {
         position: "bottom-right",
         autoClose: 3000,
       });
-      navigate(`/login`);
+      navigate(`/login`,{state: { from: "/findMissing" }});
       return;
     }
 

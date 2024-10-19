@@ -35,8 +35,14 @@ export default function Profile() {
         state: user.state || "",
         postalCode: user.postalCode || "",
       });
+    }else{
+      toast.error("You have to login first.", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      navigate("/login",{state:{from:"/profile"}});
     }
-  }, [user]);
+  }, [user, navigate]);
 
   // Function to handle input change
   const handleChange = (e) => {
