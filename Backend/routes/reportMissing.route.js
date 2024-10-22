@@ -39,13 +39,13 @@ router.post("/add/:userId", upload.array("images", 8), async (req, res) => {
     }
 
     // Upload images to Cloudinary
-    console.log("Uploading images to Cloudinary...");
+    // console.log("Uploading images to Cloudinary...");
     const imageUploadPromises = req.files.map((file) =>
       cloudinary.uploader.upload(file.path, { folder: "missing_reports" })
     );
 
     const uploadResults = await Promise.all(imageUploadPromises);
-    console.log("Cloudinary upload results:", uploadResults);
+    // console.log("Cloudinary upload results:", uploadResults);
 
     // Create the images object structure
     const images = {
@@ -102,7 +102,7 @@ router.get("/getAll", async (req, res) => {
 
 // Route to get a specific report by ID
 router.get("/get/:id", async (req, res) => {
-  console.log(req.params.id);
+  // console.log(req.params.id);
   try {
     // Find the report by ID and populate the 'user' field
     const report = await ReportMissing.findById(req.params.id);

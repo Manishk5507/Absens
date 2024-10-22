@@ -121,7 +121,7 @@ const ReportMissing = () => {
         } catch (error) {
           console.log(error);
         }
-      }, 10000);
+      }, 5000);
 
       // Check for a successful response
       toast.update(uploadToastId, {

@@ -113,11 +113,11 @@ const FindMissing = () => {
               },
             }
           );
-          // console.log(saveEmbeddingsResponse);
+          console.log(saveEmbeddingsResponse);
         } catch (error) {
           console.log(error);
         }
-      }, 10000);
+      }, 5000);
 
       toast.update(uploadToastId, {
         render:
