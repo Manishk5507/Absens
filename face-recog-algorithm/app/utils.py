@@ -89,9 +89,13 @@ def save_embedding_to_db(embedding, unique_id, collection_id=1):
 
     
     
-def delete_person_from_db(id):
+def delete_person_from_db(pid):
     try:
-        collection.delete_one({'id': id})
-        return 1
+        result = collection.delete_one({'id': pid})
+        if result.deleted_count > 0:
+            return 1  # Success, person deleted
+        else:
+            return 0  # Person not found
     except Exception as e:
-        return 0
+        print(f"Error deleting person: {e}")
+        return 0  # Failure due to an exception

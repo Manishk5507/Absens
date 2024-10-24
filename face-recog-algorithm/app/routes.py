@@ -137,13 +137,14 @@ def search():
     return jsonify({"message": "Image embeddings saved succesfully"}), 200
     
 
-@app.route('/delete/<int:id>', methods=['DELETE'])
-def delete(id):
-    response = delete_person_from_db(id)
+@app.route('/delete', methods=['POST'])
+def delete():
+    p_id = request.get_json().get('unique_id')
+    response = delete_person_from_db(p_id)
     if response == 0:
         return jsonify({"message": 'Person not found'}), 404
     
-    return jsonify({"Person deleted succesfully"}), 200
+    return jsonify({"message": "Person deleted successfully"}), 200
 
 
 def find_best(p_id, search_type=1):
