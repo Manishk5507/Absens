@@ -91,7 +91,7 @@ def save_embedding_to_db(embedding, unique_id, collection_id=1):
     
 def delete_person_from_db(pid):
     try:
-        result = collection.delete_one({'id': pid})
+        result = collection.delete_one({'unique_id': pid})
         if result.deleted_count > 0:
             return 1  # Success, person deleted
         else:
